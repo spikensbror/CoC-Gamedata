@@ -1,0 +1,13 @@
+function init_dialog(dialog)
+	dialog_helper.saved_dialog = dialog
+
+	dialog_helper.add_dialog("",0,"st_artefact_refine_actor_query") 															-- Actor
+		dialog_helper.add_dialog(0,1,"st_artefact_refine_npc_start") 											-- NPC
+			for key, value in pairs(artefact_refine.artefacts) do
+				dialog_helper.add_dialog(1, value.phrase_id, value.phrase, "artefact_refine.cond_actor_has_artefact") -- Actor
+					dialog_helper.add_script_dialog(value.phrase_id, value.phrase_id + 1, "artefact_refine.text_refine_cost") -- NPC
+						dialog_helper.add_dialog(value.phrase_id + 1, value.phrase_id + 2, "st_artefact_refine_actor_pay", "artefact_refine.cond_actor_has_money", "artefact_refine.act_refine")
+						dialog_helper.add_dialog(value.phrase_id + 1, 1111, "dm_universal_actor_exit")
+			end
+			dialog_helper.add_dialog(1, 1111, "dm_universal_actor_exit") 													-- Actor
+end

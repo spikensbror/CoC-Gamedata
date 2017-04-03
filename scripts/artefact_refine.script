@@ -1,0 +1,118 @@
+--
+
+artefacts = {
+	{ phrase_id = 11, phrase = "st_af_baloon_name", section = "af_baloon" }
+}
+
+feature_is_active = false
+
+--
+
+local function get_artefact(phrase_id)
+	for k, v in pairs(artefacts) do
+		if (tostring(v.phrase_id) == phrase_id) then
+			return v
+		end
+	end
+	
+	return nil
+end
+
+local function get_artefact_item(artefact)
+	local item = nil
+	
+	db.actor:inventory_for_each(
+		function (itm)
+			printf("%s == %s", artefact.section, itm:section())
+			if itm:cast_Artefact() and itm:section() == artefact.section and not itm:refined() then
+				item = itm
+			end
+		end
+	)
+	
+	return item
+end
+
+local function get_artefact_item_cost(item)
+	if not item then return 0 end
+	return item:cost()
+end
+
+--
+
+function cond_init(dialog)
+	return feature_is_active
+end
+
+function cond_actor_has_artefact(actor, npc, dialog_id, prev_phrase_id, phrase_id)
+	printf("Has artefact: %s, %s, %s, %s, %s", actor, npc, dialog_id, prev_phrase_id, phrase_id)
+	
+	local artefact = get_artefact(phrase_id)
+	if not artefact then
+		return false
+	end
+	
+	return get_artefact_item(artefact) ~= nil
+end
+
+function cond_actor_has_money(actor, npc, dialog_id, prev_phrase_id, phrase_id)
+	printf("Has money: %s, %s, %s, %s, %s", actor, npc, dialog_id, prev_phrase_id, phrase_id)
+	
+	local artefact = get_artefact(tostring(tonumber(prev_phrase_id) - 1))
+	if not artefact then return false end
+	
+	local item = get_artefact_item(artefact)
+	if not item then return false end
+	
+	return db.actor:money() >= get_artefact_item_cost(item)
+end
+
+function text_refine_cost(actor, npc, dialog_id, phrase_id)
+	printf("Refine cost: %s, %s, %s, %s", actor, npc, dialog_id, phrase_id)
+	
+	local artefact = get_artefact(tostring(tonumber(phrase_id) - 1))
+	if not artefact then return "ERROR (artefact)" end
+	
+	local item = get_artefact_item(artefact)
+	if not item then return "ERROR (item)" end
+	
+	return strformat(game.translate_string("st_artefact_refine_npc_cost"), get_artefact_item_cost(item))
+end
+
+function act_refine(actor, npc, dialog_id, phrase_id)
+	printf("Refine: %s, %s, %s, %s", actor, npc, dialog_id, phrase_id)
+	
+	local artefact = get_artefact(tostring(tonumber(phrase_id) - 2))
+	if not artefact then return end
+	
+	local item = get_artefact_item(artefact)
+	if not item then return end
+	
+	dialogs.break_dialog(actor, npc)
+	dialogs.relocate_money_from_actor(actor, npc, get_artefact_item_cost(item))
+	item:set_refined(true)
+end
+
+--
+
+function activate_feature()
+	if (feature_is_active) then
+		return 
+	end
+	
+	feature_is_active = true
+end 
+
+function deactivate_feature()
+	if not (feature_is_active) then
+		return 
+	end
+	
+	feature_is_active = false
+end
+
+function on_game_start()
+	if (axr_main.config:r_value("mm_options","enable_art_refine",1,false)) then
+		activate_feature()
+	end
+end

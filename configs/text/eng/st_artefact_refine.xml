@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_artefact_refine_actor_query">
+		<text>Could you help me with refining an artefact?</text>
+	</string>
+	<string id="st_artefact_refine_npc_start">
+		<text>Certainly, which artefact do you want to refine?</text>
+	</string>
+	<string id="st_artefact_refine_npc_cost">
+		<text>That will cost you %s rubles.</text>
+	</string>
+	<string id="st_artefact_refine_actor_pay">
+		<text>Sounds good.</text>
+	</string>
+	<string id="ui_inv_af_refined">
+		<text>Refined</text>
+	</string>
+	<string id="ui_inv_af_refined_true">
+		<text>Yes</text>
+	</string>
+	<string id="ui_inv_af_refined_false">
+		<text>No</text>
+	</string>
+</string_table>

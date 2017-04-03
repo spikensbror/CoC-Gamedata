@@ -105,6 +105,17 @@ function opt_menu_on_init(menu)
 		end
 	end}
 	
+	-- art_refine
+	menu.gameplay_options["art_refine"]		= {default=true, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
+		if (level.present() and artefact_refine) then
+			if (ctrl:GetCheck()) then
+				artefact_refine.activate_feature()
+			else
+				artefact_refine.deactivate_feature()
+			end
+		end
+	end}
+	
 	-- quicksave_cooldown
 	menu.gameplay_options["quicksave_cooldown"]		= {default=true, 	debug_only=false, 	typ="check"}
 	

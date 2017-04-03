@@ -517,6 +517,9 @@
 	<string id="ui_mm_r__enable_grass_shadow">
 		<text>Grass shadow</text>
 	</string>	
+	<string id="ui_mm_art_refine">
+		<text>Artefact refining</text>
+	</string>
 	<string id="ui_mm_quicksave_cooldown">
 		<text>Quicksave cooldown</text>
 	</string>
