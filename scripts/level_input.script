@@ -1,3 +1,7 @@
+local last_quicksave_time = nil
+local quicksave_cooldown_time_in_minutes = 3
+local required_quicksave_cooldown_time = 1000 * 60 * quicksave_cooldown_time_in_minutes
+
 -- called from engine!
 function on_key_press(dik,bind)
 
@@ -47,6 +51,16 @@ function action_quick_save()
 		return false 
 	end
 	
+	if (last_quicksave_time ~= nil and axr_main.config:r_value("mm_options","enable_quicksave_cooldown",1,false)) then
+		local current_cooldown_time = time_global() - last_quicksave_time
+		
+		if (current_cooldown_time < required_quicksave_cooldown_time) then
+			local time_until_cooldown_ends = math.ceil((required_quicksave_cooldown_time - current_cooldown_time) / 1000)
+			SetHudMsg(strformat(game.translate_string("st_quicksave_cooldown_active"), time_until_cooldown_ends), 4)
+			return true
+		end
+	end
+	
 	-- if game isn't already paused, then force a pause here
 	-- local force_pause
 	-- if not (device():is_paused()) then 
@@ -76,6 +90,7 @@ function action_quick_save()
 	
 	inc = inc >= axr_main.config:r_value("mm_options","quicksave_cnt",2,5) and 1 or inc + 1
 	
+	last_quicksave_time = time_global()
 	get_console():execute("save " .. (user_name() or "") .. " - quicksave" .. inc)
 	
 	-- if (force_pause) then 
